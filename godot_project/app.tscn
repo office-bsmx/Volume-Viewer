@@ -1,0 +1,108 @@
+[gd_scene format=3 uid="uid://kgqnt32ompld"]
+
+[ext_resource type="Script" uid="uid://4vmaru1swunf" path="res://app.gd" id="1_j6dmo"]
+[ext_resource type="Script" uid="uid://cx4g07d2tpl44" path="res://camera_3d.gd" id="2_qbwvd"]
+[ext_resource type="Shader" uid="uid://djqtdhs360tgw" path="res://volume.gdshader" id="3_i4801"]
+[ext_resource type="Script" uid="uid://itsbviswuesm" path="res://volume_mesh.gd" id="4_d7sxu"]
+[ext_resource type="Theme" uid="uid://jxhxldkqbfkx" path="res://app.theme" id="5_nee2x"]
+
+[sub_resource type="ProceduralSkyMaterial" id="ProceduralSkyMaterial_j6dmo"]
+
+[sub_resource type="Sky" id="Sky_qbwvd"]
+sky_material = SubResource("ProceduralSkyMaterial_j6dmo")
+
+[sub_resource type="Environment" id="Environment_i4801"]
+background_mode = 1
+sky = SubResource("Sky_qbwvd")
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_d7sxu"]
+render_priority = 0
+shader = ExtResource("3_i4801")
+shader_parameter/voxel_count = Vector3(1, 1, 1)
+shader_parameter/intensity_range = Vector2(0, 1)
+
+[sub_resource type="BoxMesh" id="BoxMesh_nee2x"]
+material = SubResource("ShaderMaterial_d7sxu")
+
+[sub_resource type="Gradient" id="Gradient_d7sxu"]
+offsets = PackedFloat32Array(0.0057471264, 0.35632184, 0.6954023, 1)
+colors = PackedColorArray(0, 0, 0, 1, 0.21176471, 0.3529412, 0.5529412, 1, 0.19215687, 0.7137255, 0.47843137, 1, 0.99607843, 0.9098039, 0.14117648, 1)
+
+[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_nee2x"]
+content_margin_top = 10.0
+
+[node name="app" type="Node3D" unique_id=577558711]
+script = ExtResource("1_j6dmo")
+
+[node name="Camera3D" type="Camera3D" parent="." unique_id=1322162520]
+transform = Transform3D(1, 0, 0, 0, 0.8853612, 0.46490386, 0, -0.46490386, 0.8853612, 0.021315098, 2.6324122, 4.836268)
+projection = 1
+size = 6.607
+near = 0.03
+far = 100.0
+script = ExtResource("2_qbwvd")
+zoom_step = 0.6
+min_size = 0.5
+max_size = 20.0
+
+[node name="WorldEnvironment" type="WorldEnvironment" parent="." unique_id=574310633]
+environment = SubResource("Environment_i4801")
+
+[node name="DirectionalLight3D" type="DirectionalLight3D" parent="." unique_id=243324497]
+transform = Transform3D(0.9100481, 0.058038637, 0.4104193, -0.41450265, 0.12742488, 0.90108293, 0, -0.9901487, 0.14001992, 0, 2.365595, 0)
+
+[node name="volume_mesh" type="MeshInstance3D" parent="." unique_id=1113620578]
+transform = Transform3D(-4.371139e-08, -1, 0, 1, -4.371139e-08, 0, 0, 0, 1, 0, 0, 0)
+mesh = SubResource("BoxMesh_nee2x")
+script = ExtResource("4_d7sxu")
+volume_json_path = "res://volumes/stent.json"
+color_map_gradient = SubResource("Gradient_d7sxu")
+
+[node name="UI" type="CanvasLayer" parent="." unique_id=782431941]
+
+[node name="Root" type="Control" parent="UI" unique_id=1959237369]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 1
+theme = ExtResource("5_nee2x")
+
+[node name="VBoxContainer" type="VBoxContainer" parent="UI/Root" unique_id=1751423637]
+layout_mode = 0
+offset_left = 24.0
+offset_top = 24.0
+offset_right = 92.0
+offset_bottom = 66.0
+
+[node name="FPS" type="Label" parent="UI/Root/VBoxContainer" unique_id=1697990428]
+layout_mode = 2
+text = "FPS: 60"
+
+[node name="IntensityRangeX" type="Label" parent="UI/Root/VBoxContainer" unique_id=2048197064]
+layout_mode = 2
+theme_override_font_sizes/font_size = 13
+theme_override_styles/normal = SubResource("StyleBoxEmpty_nee2x")
+text = "Intensity min"
+
+[node name="IntensitySliderX" type="HSlider" parent="UI/Root/VBoxContainer" unique_id=654933551]
+layout_mode = 2
+max_value = 1.0
+step = 0.05
+
+[node name="IntensityRangeY" type="Label" parent="UI/Root/VBoxContainer" unique_id=127482932]
+layout_mode = 2
+theme_override_font_sizes/font_size = 13
+theme_override_styles/normal = SubResource("StyleBoxEmpty_nee2x")
+text = "Intensity max"
+
+[node name="IntensitySliderY" type="HSlider" parent="UI/Root/VBoxContainer" unique_id=2004966480]
+layout_mode = 2
+max_value = 1.0
+step = 0.05
+value = 1.0
+
+[connection signal="value_changed" from="UI/Root/VBoxContainer/IntensitySliderX" to="." method="_on_intensity_slider_x_value_changed"]
+[connection signal="value_changed" from="UI/Root/VBoxContainer/IntensitySliderY" to="." method="_on_intensity_slider_y_value_changed"]
